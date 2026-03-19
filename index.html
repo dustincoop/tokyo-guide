@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo Family Guide — 4 Days</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#D85A30;--red-light:#FAECE7;--red-dark:#712B13;
+  --teal:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#085041;
+  --amber:#BA7517;--amber-light:#FAEEDA;--amber-dark:#412402;
+  --purple:#534AB7;--purple-light:#EEEDFE;--purple-dark:#26215C;
+  --blue:#185FA5;--blue-light:#E6F1FB;--blue-dark:#042C53;
+  --coral:#993C1D;--coral-light:#FAECE7;
+  --green:#3B6D11;--green-light:#EAF3DE;
+  --gray:#5F5E5A;--gray-light:#F1EFE8;
+  --re-bg:#FCEBEB;--re-text:#A32D2D;--re-dark:#791F1F;
+  --bg:#FAFAF7;--surface:#FFFFFF;--border:#E8E6E0;
+  --text:#1C1C1A;--text2:#5A5955;--text3:#9A9895;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+
+/* ── HEADER ── */
+.site-header{background:var(--text);color:#fff;padding:32px 24px 28px;position:sticky;top:0;z-index:100}
+.site-header h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;letter-spacing:-.3px;margin-bottom:4px}
+.site-header p{font-size:12px;opacity:.55;letter-spacing:.04em;text-transform:uppercase}
+
+/* ── DAY TABS ── */
+.day-nav{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:88px;z-index:90;overflow-x:auto}
+.day-btn{flex:1;min-width:120px;padding:14px 8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text3);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;text-align:center;line-height:1.4;white-space:nowrap;transition:all .2s}
+.day-btn.on{color:var(--red);border-bottom-color:var(--red);font-weight:500}
+.day-btn:hover:not(.on){color:var(--text);background:#fafaf5}
+.day-btn span{display:block;font-size:9px;opacity:.7;margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── DAY PANEL ── */
+.day-panel{display:none;max-width:780px;margin:0 auto;padding:24px 20px 48px}
+.day-panel.on{display:block}
+.day-head{margin-bottom:20px}
+.day-head h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:var(--text);margin-bottom:4px}
+.day-head p{font-size:12px;color:var(--text2)}
+
+/* ── DEPARTURE CARD ── */
+.depart{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:20px}
+.depart-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.depart-title .icon{font-size:16px}
+.routes{display:flex;gap:10px;flex-wrap:wrap}
+.route{flex:1;min-width:150px;background:var(--bg);border-radius:8px;padding:10px 12px;border:1px solid var(--border)}
+.route-label{font-size:9px;font-weight:500;color:var(--red);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.route-time{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.route-detail{font-size:11px;color:var(--text2);line-height:1.55}
+.dist-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;background:var(--gray-light);color:var(--gray);padding:3px 8px;border-radius:20px;margin-bottom:10px}
+
+/* ── ALERT ── */
+.alert{background:var(--re-bg);border-left:3px solid var(--re-text);border-radius:0 8px 8px 0;padding:10px 14px;font-size:12px;color:var(--re-text);margin-bottom:16px;line-height:1.6}
+.alert strong{font-weight:500;color:var(--re-dark)}
+
+/* ── CONNECTOR ── */
+.conn{display:flex;align-items:center;gap:8px;padding:4px 0;color:var(--text3);font-size:11px;margin:2px 0}
+.conn-line{flex:1;height:1px;background:var(--border)}
+
+/* ── STOP CARD ── */
+.stop{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.stop-hdr{padding:13px 15px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:background .15s}
+.stop-hdr:hover{background:#FAFAF5}
+.stop-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.stop-meta{flex:1;min-width:0}
+.stop-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;line-height:1.4}
+.tt{background:var(--amber-light);color:#7C4A00}
+.tk{background:var(--purple-light);color:var(--purple)}
+.tf{background:var(--coral-light);color:var(--red-dark)}
+.ts{background:var(--blue-light);color:var(--blue-dark)}
+.tc{background:var(--gray-light);color:var(--gray)}
+.ta{background:var(--re-bg);color:var(--re-text)}
+.tg{background:var(--gray-light);color:var(--text2)}
+.chev{font-size:11px;color:var(--text3);flex-shrink:0;margin-top:4px;transition:transform .2s}
+.chev.on{transform:rotate(180deg)}
+
+/* ── STOP BODY ── */
+.stop-body{display:none;border-top:1px solid var(--border)}
+.stop-body.on{display:block}
+.itabs{display:flex;border-bottom:1px solid var(--border);background:#FAFAF5;overflow-x:auto}
+.itab{flex-shrink:0;padding:8px 12px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.itab.on{color:var(--red);border-bottom-color:var(--red);background:var(--surface)}
+.itab:hover:not(.on){color:var(--text)}
+.ipanel{display:none;padding:14px 16px}
+.ipanel.on{display:block}
+.lbl{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;margin-top:11px}
+.lbl:first-child{margin-top:0}
+.desc{font-size:12px;color:var(--text2);line-height:1.7}
+
+/* ── CALLOUT BOXES ── */
+.box{margin-top:8px;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6}
+.box strong{font-weight:500}
+.b-am{background:var(--amber-light);color:#5C3A00}.b-am strong{color:var(--amber-dark)}
+.b-pu{background:var(--purple-light);color:#2E1B8C}.b-pu strong{color:var(--purple-dark)}
+.b-te{background:var(--teal-light);color:#04402E}.b-te strong{color:var(--teal-dark)}
+.b-bl{background:var(--blue-light);color:#0D3D7A}.b-bl strong{color:var(--blue-dark)}
+.b-co{background:var(--coral-light);color:var(--red-dark)}.b-co strong{color:#3A0E05}
+.b-re{background:var(--re-bg);color:var(--re-text)}.b-re strong{color:var(--re-dark)}
+.b-gr{background:var(--gray-light);color:#3A3937}.b-gr strong{color:#1C1C1A}
+.b-gn{background:var(--green-light);color:#1E4208}.b-gn strong{color:#0A1E02}
+
+/* ── PICKS GRID ── */
+.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:7px;margin-top:8px}
+.pick{background:var(--bg);border-radius:8px;padding:9px 11px;border:1px solid var(--border)}
+.pick b{display:block;font-weight:500;color:var(--text);font-size:12px;margin-bottom:2px}
+.pick span{color:var(--text2);font-size:11px;line-height:1.55}
+
+/* ── TIMELINE ── */
+.tl-row{display:flex;gap:10px;margin-bottom:8px}
+.tl-time{font-size:10px;font-weight:500;color:var(--red);min-width:48px;padding-top:2px;text-align:right;flex-shrink:0}
+.tl-body{flex:1;font-size:12px;color:var(--text2);line-height:1.6;border-left:2px solid var(--border);padding-left:10px;padding-bottom:4px}
+.tl-body strong{font-weight:500;color:var(--text)}
+
+/* ── FOOTER ── */
+.page-footer{text-align:center;padding:24px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:32px}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>Tokyo Family Guide — March 22–25</h1>
+  <p>ANA InterContinental · Family of 6 · Cherry Blossom Season</p>
+</header>
+
+<nav class="day-nav">
+  <button class="day-btn on" onclick="sd(0)">Day 1 · Sun Mar 22<span>Shinjuku → Shibuya</span></button>
+  <button class="day-btn" onclick="sd(1)">Day 2 · Mon Mar 23<span>Tsukiji → Yanaka</span></button>
+  <button class="day-btn" onclick="sd(2)">Day 3 · Tue Mar 24<span>Disneyland</span></button>
+  <button class="day-btn" onclick="sd(3)">Day 4 · Wed Mar 25<span>teamLab → Kyoto</span></button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ DAY 1 ═══ -->
+<div class="day-panel on" id="p0">
+<div class="day-head">
+  <h2>From Zen Gardens to Neon Crossings</h2>
+  <p>Sunday March 22 · Depart ANA InterContinental 10:00am · Cherry blossom peak · ~8km total walking</p>
+</div>
+
+<div class="depart">
+  <div class="depart-title"><span class="icon">🏨</span> ANA InterContinental → Shinjuku Gyoen National Garden</div>
+  <div class="dist-badge">📍 3.4 km from hotel · Not walkable with kids</div>
+  <div class="routes">
+    <div class="route">
+      <div class="route-label">Subway (recommended)</div>
+      <div class="route-time">~25 min · ¥220/person</div>
+      <div class="route-detail">1 min walk to Tameike-sanno Station (Exit 13) → Ginza Line → Akasaka-mitsuke → transfer Marunouchi Line → Shinjuku-gyoemmae → 3 min walk to Shinjuku Gate.</div>
+    </div>
+    <div class="route">
+      <div class="route-label">Taxi · 2 cabs for 6</div>
+      <div class="route-time">~20 min · ¥1,800–2,500</div>
+      <div class="route-detail">Hotel calls 2 taxis. Tell driver: Shinjuku Gyoen, Shinjuku-mon (Shinjuku Gate). Light Sunday morning traffic.</div>
+    </div>
+  </div>
+  <div class="box b-am" style="margin-top:10px"><strong>Coffee first:</strong> All Seasons Coffee is 5 min walk from Shinjuku-gyoemmae exit — opens 9am. Get coffees to go and carry them into the garden. Their pudding affogato (¥800) is unmissable.</div>
+</div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🌿</div><div class="stop-meta"><div class="stop-name">Shinjuku Gyoen National Garden</div><div class="tags"><span class="tag tt">10:30–12:00</span><span class="tag tk">Cherry blossom peak</span><span class="tag tk">Turtle spotting</span><span class="tag tc">All Seasons Coffee nearby</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'sg')">The Garden</div><div class="itab" onclick="it(this,'sg')">Kids & Animals</div><div class="itab" onclick="it(this,'sg')">Snacks</div><div class="itab" onclick="it(this,'sg')">Tips</div></div>
+    <div class="ipanel on" id="sg-0"><div class="desc">58 hectares blending French formal, English landscape, and Japanese strolling gardens. Over 1,000 cherry trees across 65 varieties — late March is Somei Yoshino peak. Enter Shinjuku Gate → left into formal French lawns → arc right through the massive English meadow (gentle hill to roll down) → Japanese traditional section with koi pond and Taiwan Pavilion → end at the tropical greenhouse with banana trees, carnivorous plants, and giant cycads.</div><div class="box b-am"><strong>Late March magic:</strong> On windy days petals fall like pink snow across the lawns. Stop walking when it happens — it's one of those moments. Admission ¥500 adults, kids under 15 free.</div></div>
+    <div class="ipanel" id="sg-1"><div class="desc">The enormous English meadow is pure energy-burning territory after travel days. The gentle hill in the center = rolling. The koi ponds near the traditional garden section almost always have turtles basking on rocks that kids find every time.</div><div class="box b-pu"><strong>Animal spotting list before you enter:</strong> Koi in 5+ colors, wild turtles, egrets fishing the shallows, pigeons so tame they land on your arm. Whoever spots all 4 first wins a crepe in Harajuku.</div><div class="box b-te" style="margin-top:8px"><strong>Greenhouse creature hunt:</strong> Inside the tropical greenhouse: carnivorous plants (sundews, pitcher plants), giant cycads over 200 years old, tropical insects. Free with admission. Kids who love weird biology go feral.</div><div class="box b-bl" style="margin-top:8px"><strong>Hello Kitty side quest note:</strong> Sanrio Puroland (full Hello Kitty theme park) is 45 min from Shinjuku by Keio Line. Not on this itinerary but a half-day option if demand is high. Miracle Gift Parade and Sanrio Boat Ride are the highlights.</div></div>
+    <div class="ipanel" id="sg-2"><div class="lbl">Coffee before</div><div class="desc"><strong>All Seasons Coffee</strong> — 5 min from Shinjuku-gyoemmae. Specialty café with live bean roasting. Pudding affogato (espresso over caramel-scorched custard), excellent lattes. Get coffees to go and carry into the garden.</div><div class="lbl">Inside snacks</div><div class="desc">No food inside. Grab from 7-Eleven near the gate: onigiri, melon bread, Calpico drinks (milky carbonated — kids universally love), Pocky. Stock up before entering.</div></div>
+    <div class="ipanel" id="sg-3"><div class="box b-co"><strong>Best family photo:</strong> The Taiwan Pavilion reflected in the pond with cherry blossoms overhead — southern end of the traditional garden section. Most tourists walk past it.</div><div class="box b-am" style="margin-top:8px"><strong>Hanami tip:</strong> Locals spread blue tarps and picnic under the blossoms — completely normal. Grab convenience store food and find a spot on the main lawn. No reservations. One of the most Japanese things you can do in Tokyo.</div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>8 min walk north through Harajuku Gate → Meiji Jingu</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">⛩️</div><div class="stop-meta"><div class="stop-name">Meiji Jingu Shrine</div><div class="tags"><span class="tag tt">12:00–1:00pm</span><span class="tag tg">Free entry</span><span class="tag tk">Fortune slips · Wish plaques</span><span class="tag tc">Fuglen Tokyo 7 min walk</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'mj')">The Shrine</div><div class="itab" onclick="it(this,'mj')">Kids Activities</div><div class="itab" onclick="it(this,'mj')">Coffee · Side Quests</div></div>
+    <div class="ipanel on" id="mj-0"><div class="desc">The most important Shinto shrine in Tokyo, set in a 70-hectare forest of 120,000 donated trees. The gravel approach from the Harajuku Gate feels like a decompression chamber — urban noise falls away instantly. The 12-meter torii gate near the entrance is from a single 1,500-year-old cypress. At the main courtyard: two bows, two claps, one bow (the Shinto greeting). Traditional wedding processions cross daily 11am–1pm.</div><div class="box b-am"><strong>Don't miss:</strong> A wall of sake barrels (kazaridaru) at the entrance sits next to a wall of Burgundy wine barrels from France — a gift symbolizing the cultural exchange Emperor Meiji championed. Great photo, great story for kids.</div></div>
+    <div class="ipanel" id="mj-1"><div class="box b-pu"><strong>Omikuji fortune slips:</strong> ¥100 — shake the numbered stick, find the matching drawer, pull your fortune. Bad luck? Tie it to the rack and leave it behind. Do one per person. Compare fortunes over lunch.</div><div class="box b-te" style="margin-top:8px"><strong>Ema wish plaques:</strong> Wooden plaques (¥500–1,000) where you write a wish and hang it. Kids take this seriously. Let each one write theirs privately.</div><div class="box b-bl" style="margin-top:8px"><strong>Animal carving hunt:</strong> How many different animals can they find on the shrine buildings? Dragons, phoenixes, cranes hidden throughout. The crunching gravel underfoot makes even restless kids go quiet.</div></div>
+    <div class="ipanel" id="mj-2"><div class="lbl">Coffee & Matcha after the shrine — pick one</div><div class="picks"><div class="pick"><b>Fuglen Tokyo ⭐</b><span>7 min walk south into quiet Tomigaya. The Norwegian café that sparked Tokyo's third-wave coffee scene in 2012. Scandinavian-Japanese minimalism, vintage mid-century furniture. Oat milk available. ¥700–900. Open daily from 7am. Our top pick for this stop.</span></div><div class="pick"><b>Little Nap Coffee Stand</b><span>A tiny cult-status coffee stand tucked on the western edge of Yoyogi Park. No indoor seating — stand, sip, and watch locals cycle past. Cappuccino and long black are exceptional. Perfect grab-and-go before the Yoyogi picnic. ¥600–750. Open daily 9am.</span></div><div class="pick"><b>Matcha Stand Maruni (Tomigaya)</b><span>Minimal interior, ceremonial-grade Uji matcha prepared to order in front of you. Single and double shot options, oat and almond milk. The matcha soft serve is one of the best in the city. Great for kids who want something sweet. ¥700–900.</span></div></div><div class="box b-gr" style="margin-top:8px"><strong>How to choose:</strong> Serious coffee → Fuglen. Quick grab on the way to the park → Little Nap. Matcha for kids (or adults) → Matcha Stand Maruni. All three are within a 10-min walk of the shrine's south gate.</div><div class="lbl" style="margin-top:10px">Side quests near Yoyogi</div><div class="picks"><div class="pick"><b>Yoyogi playground</b><span>Large open-air playground on the south side of Yoyogi Park — swings, climbing structures, sandbox. 15 min of energy burning before Harajuku.</span></div><div class="pick"><b>NHK Studio Park</b><span>Japan's national broadcaster visitor center just south of Yoyogi. Interactive broadcasting exhibits, character mascots. ¥200, kids under 12 free.</span></div></div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>5 min walk south → Yoyogi Park → 8 min east to Harajuku</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🍭</div><div class="stop-meta"><div class="stop-name">Yoyogi Picnic → Harajuku → Omotesando</div><div class="tags"><span class="tag tt">1:00–3:30pm</span><span class="tag tf">Marion Crepes · Totti Cotton Candy</span><span class="tag tk">Gachapon · Hello Kitty goods</span><span class="tag ts">Cat Street · Omotesando Hills</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'hr')">The Walk</div><div class="itab" onclick="it(this,'hr')">Viral Snacks</div><div class="itab" onclick="it(this,'hr')">Coffee & Matcha</div><div class="itab" onclick="it(this,'hr')">Kids Side Quests</div><div class="itab" onclick="it(this,'hr')">Shopping</div></div>
+    <div class="ipanel on" id="hr-0"><div class="lbl">1:00–1:45 — Yoyogi Park picnic</div><div class="desc">Grab convenience store lunch from the 7-Eleven at Harajuku Station (2 min). Spread out on the cherry blossom lawn. Hit the south-side playground for 15 min of play before Harajuku.</div><div class="lbl">1:45–2:45 — Takeshita Street</div><div class="desc">350m of concentrated pop-culture chaos. Walk the full length slowly from the Harajuku Station end. Exit at the far end, return via Cat Street — a quieter, design-forward parallel lane toward Omotesando.</div><div class="lbl">2:45–3:30 — Omotesando</div><div class="desc">Tokyo's elegant boulevard with spectacular flagship architecture (LVMH Tower, Prada, the Tod's building shaped like a tree by Toyo Ito). Omotesando Hills mall has a children's store with a small play area in the basement.</div></div>
+    <div class="ipanel" id="hr-1"><div class="picks"><div class="pick"><b>Marion Crepes</b><span>Tokyo's most famous crepe chain since 1976. Strawberry + cream + ice cream is the move. Slightly crispy edges. Line moves fast. ¥700–900.</span></div><div class="pick"><b>Totti Cotton Candy ⭐</b><span>Basketball-sized rainbow cotton candy — 5 flavors. On Takeshita 2F. The most TikTok'd Harajuku food item. ¥800. Line 10–20 min.</span></div><div class="pick"><b>French toast stalls</b><span>Thick eggy Japanese-style french toast with toppings. Multiple stalls. ¥600–800.</span></div><div class="pick"><b>DIY candy shops</b><span>Assemble your own candy mix from bulk bins. Budget ¥500 per kid. They go completely feral.</span></div></div></div>
+    <div class="ipanel" id="hr-2">
+      <div class="lbl">On Takeshita Street</div>
+      <div class="picks">
+        <div class="pick"><b>NOA Coffee Matcha Salon ⭐</b><span>2nd floor above Takeshita with a window looking directly down onto the chaos below. Excellent matcha latte with soy + dessert sets. Japandi aesthetic, calm inside. Morning set ¥900 (8–11am), afternoon from ¥800. Open daily 8am–9pm.</span></div>
+        <div class="pick"><b>Latte Pocket — custom art</b><span>Tiny café where the barista creates custom latte art based on any photo or character you bring — Pokémon, your cat, anime characters all work. Kids go completely sideways for this. Vanilla latte ¥700–850. Open Mon–Wed/Fri 12–6pm, Sat–Sun 10am–6pm. Closed Thu.</span></div>
+      </div>
+      <div class="lbl" style="margin-top:12px">On Omotesando / Cat Street</div>
+      <div class="picks">
+        <div class="pick"><b>The Matcha Tokyo — Omotesando</b><span>Minimalist white interior, open prep counter so you watch the matcha being whisked. Earthy, properly bitter, not oversweetened. Matcha castella and soft serve are excellent pairings. Can have a queue but it moves. Card only. ¥800–1,200. Open daily 11am–7pm.</span></div>
+        <div class="pick"><b>Sedai Coffee & Roasters</b><span>A tiny specialty roastery on a side street between Harajuku and Shibuya — rated 4.8 and beloved by Tokyo coffee obsessives. They roast on-site and pull single-origin espresso with melon and stone-fruit notes. Also do pistachio and matcha coffee variations. ¥700–900. Open daily 9am–7pm (Sat/Sun 10am–6pm).</span></div>
+        <div class="pick"><b>Kopikalyan</b><span>Indonesian specialty coffee roastery on a quieter side street near the Harajuku-Omotesando border. Large space with lots of seating — rare in this area. Does excellent matcha lattes and cold brew alongside traditional kopi. Great when you need everyone seated. Open daily 9am–8pm.</span></div>
+        <div class="pick"><b>Cres. Coffee (hidden gem)</b><span>4th floor of a building near Omotesando crossing — a single owner sourcing and brewing extraordinary specialty lots (Panama Geisha, Yemeni, Ethiopian). Jazz, window view over the intersection, unhurried pace. Ask what she's most proud of that day. ¥1,000–1,500. Open Wed/Sat/Sun afternoons only — check before going.</span></div>
+      </div>
+      <div class="box b-gr" style="margin-top:10px"><strong>How to pick:</strong> For kids → Latte Pocket (custom Pokémon art) or NOA Matcha Salon (window over Takeshita chaos). For matcha purists → The Matcha Tokyo. For serious coffee → Sedai or Cres. For everyone seated comfortably → Kopikalyan.</div>
+    </div>
+    <div class="ipanel" id="hr-3"><div class="box b-pu"><strong>Gachapon machines:</strong> Capsule toy vending machines at the Takeshita entrance — ¥200–500 per capsule, random miniature figures and character goods. Budget ¥1,000–2,000 per kid. This is their favorite memory of the trip.</div><div class="box b-te" style="margin-top:8px"><strong>Pokémon / Nintendo / Hello Kitty:</strong> Pokémon Center and Nintendo Tokyo are in Shibuya PARCO — your next stop. For Hello Kitty specifically: multiple shops on Takeshita carry Sanrio goods right now. Look for Hello Kitty displays in windows. The dedicated Sanrio Gift Gate flagship is in Ginza (15 min from your hotel) for a deeper visit.</div><div class="box b-bl" style="margin-top:8px"><strong>Cosplay/dress-up:</strong> Shops on Takeshita sell cat ear sets, Lolita dresses, full cosplay outfits. Kids can try things on — staff are very patient. Even a ¥500 cat-ear headband makes for great Harajuku photos.</div></div>
+    <div class="ipanel" id="hr-4"><div class="picks"><div class="pick"><b>Omotesando Hills</b><span>Tadao Ando-designed luxury mall with a continuous interior ramp spiraling 6 floors. Children's store + small play area in basement.</span></div><div class="pick"><b>Cat Street boutiques</b><span>Independent fashion, rare vintage denim, skate brands. More interesting than Takeshita for adult shoppers.</span></div><div class="pick"><b>Takeshita character goods</b><span>Sanrio, Pokémon, Ghibli merch at better prices than flagship stores.</span></div><div class="pick"><b>Village Vanguard</b><span>Chaotic wonderful shop — weird design objects, Japanese pop-culture goods. Easy to lose 30 min inside.</span></div></div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>15 min walk south or 2-stop subway: Meiji-jingumae → Shibuya (Chiyoda Line)</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🚦</div><div class="stop-meta"><div class="stop-name">Shibuya Crossing + Shibuya Sky + Pokémon Center + Nintendo Tokyo</div><div class="tags"><span class="tag tt">3:30–6:00pm</span><span class="tag tk">Pokémon · Nintendo PARCO 6F</span><span class="tag ta">Book Shibuya Sky ahead</span><span class="tag tc">Blue Bottle · Ichiran</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'sb')">The Crossing</div><div class="itab" onclick="it(this,'sb')">Pokémon & Nintendo</div><div class="itab" onclick="it(this,'sb')">Shibuya Sky</div><div class="itab" onclick="it(this,'sb')">Food & Coffee</div></div>
+    <div class="ipanel on" id="sb-0"><div class="desc">The world's busiest pedestrian intersection — up to 3,000 people cross simultaneously from every angle. Cross at street level at least twice (once with flow, once diagonal). Best overhead view: 2nd-floor Starbucks in Tsutaya building on the corner — arrive 15 min early for a window seat. Best energy: 4:30–5:30pm Sunday.</div><div class="box b-am"><strong>Three-perspective sequence:</strong> (1) Cross at street level. (2) Starbucks 2F window view. (3) Shibuya Sky rooftop. Completely different scales on the same intersection.</div></div>
+    <div class="ipanel" id="sb-1"><div class="lbl">Pokémon Center Shibuya — PARCO 6F</div><div class="desc">One of Japan's largest Pokémon Centers. Exclusive Japan-only merchandise throughout. Design Lab: customize a Pokémon t-shirt (get design ticket immediately on arrival — 30–60 min wait). Trading card counter (10-pack limit per person). Budget 45 min total. ¥3,000–8,000 per kid for a meaningful haul.</div><div class="lbl">Nintendo Tokyo — same floor, PARCO 6F</div><div class="desc">Floor-to-ceiling Mario, Zelda, Animal Crossing, Splatoon. Massive character statues for photos. Exclusive Tokyo-only merch. Best Amiibo selection in Japan. A Gachapon machine dispensing controller-themed capsules. Do both stores in one 6F session.</div><div class="box b-pu"><strong>Hello Kitty in Shibuya:</strong> Sanrio goods in Tokyu Hands (Shibuya Hikarie B1F, 3 min from PARCO) and Loft stores nearby. For the full Hello Kitty flagship: Sanrio Gift Gate Ginza, 15 min from your hotel — a great morning side trip on any day.</div></div>
+    <div class="ipanel" id="sb-2"><div class="desc">229m up on the open-air roof of Shibuya Scramble Square — no glass barriers on the upper level. Clear late-March days show Mt. Fuji to the west. Late afternoon golden-hour light is extraordinary.</div><div class="box b-bl"><strong>Book ahead:</strong> shibuya-scramble-square.com — ¥2,500 adult, ¥1,600 age 13–17, ¥1,000 age 3–12. Sells out on weekends. Time for 5pm to catch sunset from 46 floors above the crossing.</div></div>
+    <div class="ipanel" id="sb-3"><div class="lbl">Viral food</div><div class="desc"><strong>Ichiran Ramen</strong> — 5 min from the crossing. Single-occupancy ramen booths: order via a form, sit in your own wooden partition, receive tonkotsu ramen through a small window. Kids find it hilarious and slightly mysterious. Exceptional ramen. Perfect when everyone's tired.</div><div class="lbl">Coffee</div><div class="desc"><strong>Blue Bottle Coffee Shibuya</strong> — 3 min from crossing. Beautiful 2-floor interior, small outdoor park. Get the latte and waffle. Note: one reviewer flagged an unfriendly experience with children here — Fuglen is the safer family coffee choice.</div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>3 stops Tokyu Toyoko Line → Nakameguro (8 min) · Cherry blossom canal dinner</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🌆</div><div class="stop-meta"><div class="stop-name">Nakameguro Canal Walk — Dinner</div><div class="tags"><span class="tag tt">6:30pm onwards</span><span class="tag tf">Night cherry blossoms · Yakitori · Ramen</span><span class="tag tc">Onibus Coffee · Starbucks Reserve</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'nm')">The Neighborhood</div><div class="itab" onclick="it(this,'nm')">Coffee</div><div class="itab" onclick="it(this,'nm')">Dinner</div><div class="itab" onclick="it(this,'nm')">Shopping</div></div>
+    <div class="ipanel on" id="nm-0"><div class="desc">The Meguro River runs through Nakameguro, lined on both banks by cherry trees that in late March create a canopy of blossoms. At night they're strung with small lanterns — yozakura (night cherry blossom viewing) is a genuine Tokyo tradition, and Nakameguro is the best place to experience it. Intimate, stylish, residential.</div><div class="box b-am"><strong>Late March specifics:</strong> Lanterns go up along the canal ~March 20–April 5 during peak bloom. Walking the canal at dusk with cherry blossoms overhead and lanterns glowing is the best possible end to Day 1.</div></div>
+    <div class="ipanel" id="nm-1"><div class="desc"><strong>Onibus Coffee</strong> — tiny wooden cabin right next to the canal and train tracks. Single-origin pour-overs, excellent banana bread. Reviewer notes it's "practically next to a playground" — great for parents.</div><div class="box b-te"><strong>Starbucks Reserve Roastery:</strong> The famous Nakameguro location is partially below street level with floor-to-ceiling windows facing the cherry blossom canal. Even without buying, walk past it — architecturally stunning. During blossom season the queue moves. Worth seeing once.</div></div>
+    <div class="ipanel" id="nm-2"><div class="picks"><div class="pick"><b>Yakitori alley</b><span>Charcoal-grilled skewers of chicken, vegetables, mushrooms. Order by the skewer (¥150–350 each). Perfect for families — everyone orders individually. Look for smoke coming out of a small doorway.</span></div><div class="pick"><b>Ramen</b><span>Several solid shops in the canal area. Look for a short queue — local-approved in Nakameguro means excellent. Tonkotsu and shoyu are most kid-friendly.</span></div><div class="pick"><b>Conveyor belt sushi</b><span>Kaitenzushi lets everyone order exactly what they want. Kids universally love the format. ¥1,500–2,500 per person.</span></div><div class="pick"><b>Neels Café dessert</b><span>Canal-side café — Princess Tart and drinks pair perfectly with a post-dinner canal walk under the blossoms.</span></div></div></div>
+    <div class="ipanel" id="nm-3"><div class="picks"><div class="pick"><b>Vintage clothing</b><span>Well-curated vintage and secondhand shops. Higher quality than Harajuku, lower key. Good for adults wanting Japanese workwear or denim.</span></div><div class="pick"><b>Cow Books</b><span>Tiny, beautiful used bookshop on the canal specializing in arts, photography, counterculture. Worth stepping into even without buying.</span></div><div class="pick"><b>Japanese homeware</b><span>Several shops selling beautiful ceramics, linens, and design objects. Good for adults wanting to bring something home that isn't a typical souvenir.</span></div></div></div>
+  </div>
+</div>
+</div><!-- end day 1 -->
+
+<!-- ═══════════════════════════════════════════════════════════ DAY 2 ═══ -->
+<div class="day-panel" id="p1">
+<div class="day-head">
+  <h2>Old Tokyo, Market Streets & Quiet Corners</h2>
+  <p>Monday March 23 · Depart ANA InterContinental 10:00am · Walking + water bus + subway · ~9km total</p>
+</div>
+
+<div class="depart">
+  <div class="depart-title"><span class="icon">🏨</span> ANA InterContinental → Tsukiji Outer Market</div>
+  <div class="dist-badge">📍 ~5 km from hotel · Not walkable</div>
+  <div class="routes">
+    <div class="route">
+      <div class="route-label">Subway (recommended)</div>
+      <div class="route-time">~20 min · ¥200/person</div>
+      <div class="route-detail">1 min walk to Tameike-sanno (Exit 13) → Ginza Line 4 stops to Shimbashi → 10 min walk to Tsukiji Outer Market. Or: Oedo Line from Roppongi-itchome (8 min walk from hotel) → Tsukijishijo direct, ~15 min.</div>
+    </div>
+    <div class="route">
+      <div class="route-label">Taxi · Easiest option</div>
+      <div class="route-time">~12–15 min · ¥1,400–2,000</div>
+      <div class="route-detail">Hotel calls 2 taxis. Tell driver: Tsukiji Gaichi Shijo. Very light Monday morning traffic. For a jet-lagged first full day, the simplest option by far.</div>
+    </div>
+  </div>
+  <div class="box b-am" style="margin-top:10px"><strong>Timing matters:</strong> Stalls begin closing ~1pm. 10:30am arrival = sweet spot of full operation without peak crush. Bring cash — many stalls are cash only.</div>
+</div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🐟</div><div class="stop-meta"><div class="stop-name">Tsukiji Outer Market</div><div class="tags"><span class="tag tt">10:30–12:00</span><span class="tag tf">Best street food in Tokyo</span><span class="tag tk">Tamagoyaki challenge</span><span class="tag tc">Turret Coffee · Matcha Maruni</span><span class="tag ts">Knives · Pantry goods</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'ts')">The Market</div><div class="itab" onclick="it(this,'ts')">What to Eat</div><div class="itab" onclick="it(this,'ts')">Coffee & Matcha</div><div class="itab" onclick="it(this,'ts')">Kids Activities</div><div class="itab" onclick="it(this,'ts')">Shopping</div></div>
+    <div class="ipanel on" id="ts-0"><div class="desc">A dense grid of narrow lanes with fishmongers, egg vendors, professional knife shops, and tiny restaurants doing one or two things with extraordinary precision. Walk a full loop first without buying to survey everything, then go back for what you want.</div><div class="box b-am"><strong>Family of 6 strategy:</strong> Split into two roving groups with a meetup at 11:30am. Cover more ground, avoid single-file bottlenecks in the narrow lanes.</div></div>
+    <div class="ipanel" id="ts-1"><div class="picks"><div class="pick"><b>Tamagoyaki ⭐</b><span>Rolled egg on a wooden skewer — custard-thick, slightly sweet, fresh off the pan. Marutake or Yamachō. 5–10 min line. ¥400. Most kid-friendly food at the market.</span></div><div class="pick"><b>Vegetable tempura skewers</b><span>Seasonal veg fried to order — sweet potato, lotus root, shishito peppers, eggplant. Light, greaseless batter, crispy and hot. Kids who don't usually like vegetables often convert here. ¥200–400 per skewer.</span></div><div class="pick"><b>Tuna sashimi</b><span>Fresh-cut from the tuna stalls. At this quality and price (¥600–1,200), you won't find better outside a high-end restaurant.</span></div><div class="pick"><b>Japanese strawberries ⭐</b><span>Peak season is late March. Intensely sweet, enormous. A flat runs ¥800–1,500. Don't skip these.</span></div><div class="pick"><b>Taiyaki</b><span>Fish-shaped pastry filled with sweet red bean paste (anko), custard, or sweet potato — pressed hot to order. Crispy outside, soft and warm inside. One of Japan's most beloved street snacks. Kids who try one almost always want a second. ¥200–400.</span></div><div class="pick"><b>Uni (sea urchin)</b><span>Divisive but extraordinary. Adults: don't skip. Kids: warn them first.</span></div></div></div>
+    <div class="ipanel" id="ts-2">
+      <div class="lbl">Quick takeaway — walk with it</div>
+      <div class="picks">
+        <div class="pick"><b>Matcha Stand Maruni ⭐</b><span>A dedicated matcha stand inside the market lanes — ceremonial-grade Uji matcha prepared to order in front of you. Takeaway only. The bright green color is extraordinary; other tourists will ask where you got it. Double-shot iced matcha latte + plain soft serve for kids. ¥600–900. Open Mon/Tue/Thu/Sat 8am–4pm. Closed Wed.</span></div>
+        <div class="pick"><b>Turret Coffee</b><span>A Michelin Guide-listed café a short walk from the outer market. Their Turret Latte is famous for its rich smooth taste and latte art. The Turret Cheesecake is made by a Michelin-starred chef and has its own following. Black sesame latte is also excellent. Arrive early — queues form before opening. ¥730–1,200. Open Mon/Tue/Fri/Sat 7am–5pm, Thu 7am–3pm, Sun 8am–4pm. Closed Wed.</span></div>
+      </div>
+      <div class="lbl" style="margin-top:12px">Sit-down — proper break</div>
+      <div class="picks">
+        <div class="pick"><b>FRUITS MATCHA Mt.FUJI</b><span>Upstairs above the market chaos — a café with a live pianist who plays while you eat. Japanese soufflé pancakes, matcha drinks, and double espresso. A completely unexpected oasis of calm literally on top of a fish market. Request songs from the pianist. ¥1,000–1,800 per person with food. Open daily 9am–3pm (Sat to 4pm). 2F above the market lanes.</span></div>
+      </div>
+      <div class="box b-gr" style="margin-top:10px"><strong>Strategy:</strong> For a quick grab-and-wander: Matcha Stand Maruni or Turret Coffee. For a seated mid-market reset with kids who need 20 min off their feet: FRUITS MATCHA Mt.FUJI upstairs — calm, musical, genuinely surprising.</div>
+    </div>
+    <div class="ipanel" id="ts-3"><div class="box b-pu"><strong>The tamagoyaki challenge:</strong> Each kid tries one new food. Tamagoyaki is the entry point — universally loved. From there, escalate to vegetable tempura or taiyaki. Whoever tries the most new things wins something at the next stop.</div><div class="box b-te" style="margin-top:8px"><strong>Knife shops:</strong> Stop into a professional knife shop — 4th-generation craftsmen, museum-quality blades. Many will demonstrate whetstone sharpening. Kids find the precision genuinely fascinating.</div><div class="box b-bl" style="margin-top:8px"><strong>Animal sighting:</strong> Tsukiji market cats live in the lanes. Not guaranteed but kids who spot one feel like they won. Also: live shellfish and fish in vendor tanks that kids get transfixed by.</div></div>
+    <div class="ipanel" id="ts-4"><div class="picks"><div class="pick"><b>Professional knives</b><span>Masahiro, Misono, Tojiro. Quality chef's knife ¥8,000–25,000. The best kitchen knives you can buy in Japan.</span></div><div class="pick"><b>Dried goods</b><span>Kombu, bonito flakes, specialty soy sauces, wasabi. Light, packable, excellent gifts for anyone who cooks.</span></div><div class="pick"><b>Chopsticks & ceramics</b><span>Professional-grade tableware. Chopstick sets (¥500–2,000) make great gifts for all ages.</span></div><div class="pick"><b>Specialty nori</b><span>Grades of dried seaweed you won't find outside Japan. Usually offered for sampling. Premium varieties are extraordinary.</span></div></div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>15 min walk southwest along the waterfront to Hamarikyu Gardens</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🌿</div><div class="stop-meta"><div class="stop-name">Hamarikyu Gardens + Water Bus to Asakusa</div><div class="tags"><span class="tag tt">12:15–1:15pm</span><span class="tag tg">¥300 entry · Tea ceremony ¥700</span><span class="tag tk">300yr pine · Wild ducks</span><span class="tag tf">Water bus ⭐ do not skip</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'hm')">The Garden</div><div class="itab" onclick="it(this,'hm')">Kids Moments</div><div class="itab" onclick="it(this,'hm')">Tea House</div><div class="itab" onclick="it(this,'hm')">Water Bus ⭐</div></div>
+    <div class="ipanel on" id="hm-0"><div class="desc">A perfectly maintained feudal-era garden surrounded by skyscrapers and Tokyo Bay. Former duck-hunting grounds of the Tokugawa shogunate. Tidal ponds — water rises and falls with Tokyo Bay. A 300-year-old pine tree near the central pond predates the American Revolution. The contrast between this quiet and the surrounding skyline is one of the most Tokyo-specific visual experiences of the trip.</div></div>
+    <div class="ipanel" id="hm-1"><div class="box b-pu"><strong>The 300-year-old pine:</strong> Have them put their hands on the bark. It was already 100 years old before the US existed. Massive, gnarled, supported by wooden props.</div><div class="box b-te" style="margin-top:8px"><strong>Tidal ponds & animals:</strong> The water rises and falls with ocean tides even though you're deep inside the city. Herons and egrets fish the shallows — excellent animal spotting. Wild ducks wander the paths with complete indifference to tourists.</div><div class="box b-bl" style="margin-top:8px"><strong>The duck blinds:</strong> Traditional wooden duck-hunting blinds (kamo-ba) from the Tokugawa shogunate still stand near the ponds. Kids find the idea of samurai-era royalty hunting ducks here hilarious.</div></div>
+    <div class="ipanel" id="hm-2"><div class="desc">The Nakajima-no-Ochaya teahouse sits on a tiny island reached by two wooden bridges. ¥700/person: matcha + one wagashi sweet (seasonal mochi or bean-paste confection). One of the most peaceful 20-minute resets in all of Tokyo. Even matcha skeptics find this version — prepared properly in a beautiful setting — genuinely good.</div><div class="box b-am"><strong>Active kid split:</strong> Interested kids and adults do the tea ceremony; very active kids walk the nearby pond path supervised. Reconvene at the wooden bridge for the water bus.</div></div>
+    <div class="ipanel" id="hm-3"><div class="desc">From Hamarikyu Pier, board the Sumida River water bus (Suijō Bus) to Asakusa — 40 min up the river through old Tokyo. You pass under 14 historic bridges, see the Asahi Beer building with its famous golden "flame" on the roof, and arrive directly at Asakusa Pier, 2 min from Sensō-ji.</div><div class="box b-te"><strong>Logistics:</strong> Boats run every 40–60 min. ¥1,200 adult, ¥600 child (6–11), under 6 free. Buy at the pier. Total for family of 6: ~¥6,600. The single best transport decision of the trip.</div><div class="box b-pu" style="margin-top:8px"><strong>Kids on the boat:</strong> Sit on the open deck if weather allows. Views of historic bridges are spectacular from the water. Bring Tsukiji snacks to eat on the boat.</div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>Water bus: Hamarikyu Pier → Asakusa (~40 min) · Arrive ~2:00pm</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">⛩️</div><div class="stop-meta"><div class="stop-name">Sensō-ji Temple & Asakusa</div><div class="tags"><span class="tag tt">2:00–4:00pm</span><span class="tag tk">Rickshaws · Kimono · Fortune slips</span><span class="tag tf">Strawberry daifuku · Sweet potato brûlée · Melonpan</span><span class="tag tc">February Coffee · Chacha Futatsume</span><span class="tag ts">Nakamise · Kappabashi</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'as')">The Temple</div><div class="itab" onclick="it(this,'as')">Kids Activities</div><div class="itab" onclick="it(this,'as')">Viral Snacks</div><div class="itab" onclick="it(this,'as')">Coffee & Matcha</div><div class="itab" onclick="it(this,'as')">Shopping</div></div>
+    <div class="ipanel on" id="as-0"><div class="desc">Tokyo's oldest temple (645 AD — nearly 1,400 years old), most visited (30M/year). Enter through Kaminarimon — the giant red lantern is 4m tall, 700kg. Walk Nakamise shopping street slowly to the main hall. At the hall: coin in box, two bows, two claps, make a wish, one bow. The giant incense burner (jokoro) — waft smoke toward yourself. Kids especially love this part.</div><div class="box b-am"><strong>Context for kids:</strong> This temple is 1,380 years old. The Roman Colosseum was already 600 years old when this was built. That usually lands.</div></div>
+    <div class="ipanel" id="as-1"><div class="box b-pu"><strong>Omikuji fortune slips:</strong> ¥100 each. Shake cylinder, match number, pull slip, tie bad luck to the rack. Do one per person. Compare at dinner.</div><div class="box b-te" style="margin-top:8px"><strong>Rickshaw rides:</strong> Depart from outside Kaminarimon. English-speaking operators pull you through historic Asakusa lanes. 30 min ~¥7,000–10,000 for 2. For 6 people, coordinate 3 rickshaws as a convoy. Kids remember this forever.</div><div class="box b-bl" style="margin-top:8px"><strong>Kimono rental:</strong> Multiple shops nearby — ¥2,000–4,000 per person, hair included. Sizes for children as small as age 3. Kids in kimono walking the temple district is a memory-making move.</div><div class="box b-pu" style="margin-top:8px"><strong>Name stamps in kanji:</strong> Shops on Nakamise engrave your name in Japanese katakana on a hanko stamp on the spot. ¥500–1,500. Every kid should get one.</div></div>
+    <div class="ipanel" id="as-2">
+      <div class="picks">
+        <div class="pick"><b>Strawberry daifuku ⭐</b><span>Whole fresh strawberry inside sweet red bean paste wrapped in soft mochi. Late March = peak strawberry season. Genuinely extraordinary. ¥300–450.</span></div>
+        <div class="pick"><b>Imo Pippi — sweet potato brûlée ⭐</b><span>The most viral street food in Asakusa right now. A slow-aged, slow-cooked Japanese sweet potato topped with custard cream and torched caramelized sugar — crème brûlée but make it a potato. The snap of the sugar crust into the silky custard and sweet potato is genuinely excellent. Also: baked sweet potato with honey butter (¥750), and a purple potato silk-thread ice cream (¥1,400, similar to matcha Mont Blanc construction). Near Sensō-ji. All year round. Follow the queue.</span></div>
+        <div class="pick"><b>Daigakuimo — Oimoyasan Koshin</b><span>A Meiji-era institution (est. 1884) on the main approach street: chunks of Japanese sweet potato deep-fried then tossed in glossy caramel honey syrup and scattered with black sesame. Crispy shell, pillowy interior. The original Tokyo sweet potato snack — university students ate these to save money in the 1920s depression, hence the name (daigaku = university). Sold by weight, freshly fried batches appear throughout the day. ¥500–800. Cash preferred.</span></div>
+        <div class="pick"><b>Melonpan ice cream</b><span>Sweet bread roll sliced open, stuffed with soft-serve. Wildly popular, very photogenic. ¥500.</span></div>
+        <div class="pick"><b>Ningyo-yaki</b><span>Baked cakes shaped like lanterns and temple gates, filled with sweet red bean paste. The traditional Asakusa snack for 100+ years. ¥200 for 5.</span></div>
+        <div class="pick"><b>Agemanju</b><span>Deep-fried sweet bun — custard version is the crowd pleaser. Hot and crispy. ¥200.</span></div>
+      </div>
+    </div>
+    <div class="ipanel" id="as-3">
+      <div class="lbl">Coffee — specialty</div>
+      <div class="picks">
+        <div class="pick"><b>February Coffee ⭐</b><span>Asakusa's most beloved local café group — four branches within a 10-min walk of Sensō-ji, all serving the same deep-roast espresso that locals swear by. The original opened in 2012 and earned a spot in Tabelog's top 100 cafés; the Roastery branch lets you watch the pink roasting machine at work. Signature item: the kissaten-style pudding (set custard, caramel sauce, thick and wobbling) — order it with an espresso. Pelican bakery bread used for all food items; the thick-cut toast and cheese toast sets are exceptional. Open daily 8:15am–6:30pm. ¥700–1,000.</span></div>
+        <div class="pick"><b>Fuglen Asakusa</b><span>Second location of the Norwegian café that sparked Tokyo's third-wave coffee scene. Beautiful two-floor converted space near the Sumida River, more spacious than the Tomigaya original, with outdoor benches. Same exceptional light-roast single-origin coffee, craft beer in the evenings, and their famous waffles with Norwegian brown cheese. Open daily. ¥700–900.</span></div>
+      </div>
+      <div class="lbl" style="margin-top:12px">Matcha & Japanese sweets</div>
+      <div class="picks">
+        <div class="pick"><b>Chacha Futatsume ⭐</b><span>The viral matcha dessert spot right by Kaminarimon. Signature is the Matcha Mont Blanc Cone: layers of sponge cake, lemon marmalade, homemade bean paste, mascarpone cream, and ice cream, topped with matcha-chestnut paste piped in noodle form and finished with gold leaf. Staff hold the cone while squeezing the matcha topping so you can film it — very intentionally photogenic. Honest caveat: it's rich and large (easily split between two people), and some reviewers find it more matcha-chestnut paste than ice cream. If you want pure matcha ice cream, this isn't it. But as a family spectacle it's excellent. ¥1,200–1,600. Small seating area inside. Near Sensō-ji.</span></div>
+        <div class="pick"><b>Kagurachaka puchi — "Universe's Thickest Matcha Latte"</b><span>Near Asakusa Station on the Tsukuba Express. Famous for their matcha latte intensity scale: 8 levels, but you can only order level 8 (the Interdimensional Matcha Latte) after ordering level 7. Nishio matcha from Aichi Prefecture. Kids who like matcha will enjoy picking their level. ¥600–900. Open daily.</span></div>
+        <div class="pick"><b>Matcha Cafe Chazen — make-your-own experience</b><span>An experience-based matcha café near Sensō-ji where you make your own seasonal Japanese sweets (nerikiri — white bean paste molded into seasonal shapes) and then whisk your own matcha using authentic bowls and equipment in a traditional tea room setting. Photos in front of seasonal decorations included. Kids welcome, beginners welcome, staff guide you through it. ~30–45 min. Book ahead if possible. ¥1,500–2,000. Multilingual staff.</span></div>
+      </div>
+      <div class="box b-gr" style="margin-top:10px"><strong>How to pick:</strong> Serious coffee + a great pudding → February Coffee. Lighter roast + beautiful space → Fuglen. Viral matcha dessert photo → Chacha Futatsume. Kids want to make something → Matcha Cafe Chazen. Matcha intensity game → Kagurachaka puchi.</div>
+    </div>
+    <div class="ipanel" id="as-4"><div class="picks"><div class="pick"><b>Kappabashi Kitchen Town</b><span>5 min walk from Sensō-ji. An entire street of professional kitchen supply shops — plastic food replicas, beautiful bento boxes, ceramics, chopsticks. Best adult shopping street in Tokyo for anyone who cooks. Covered in detail in the Asakusa → Yanaka routing card below.</span></div><div class="pick"><b>Traditional toys</b><span>Wooden tops (koma), kendama, daruma dolls. More interesting and durable than plastic character goods. Good gifts for active kids.</span></div><div class="pick"><b>Sanrio in Asakusa</b><span>Several shops on and near Nakamise carry Hello Kitty merchandise. Not a flagship but good for browsing. Full Sanrio flagship (Ginza Gift Gate) is 20 min by subway.</span></div><div class="pick"><b>Fuglen Asakusa</b><span>Second location of the beloved Oslo/Tokyo café. Beautiful converted space near the river. Same exceptional coffee, quieter than Tomigaya original. Also listed in the Coffee & Matcha tab above.</span></div></div></div>
+  </div>
+</div>
+
+<!-- GETTING TO YANAKA — two options -->
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🗺️</div><div class="stop-meta"><div class="stop-name">Asakusa → Yanaka: Walk or Subway?</div><div class="tags"><span class="tag tt">Decide before you leave Asakusa</span><span class="tag tg">Walk ~70 min · Subway ~20 min</span><span class="tag tk">Walk passes Hanayashiki · Kappabashi · Ueno</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'rt')">The Walk ⭐ (recommended)</div><div class="itab" onclick="it(this,'rt')">Subway (quick)</div><div class="itab" onclick="it(this,'rt')">Hanayashiki Detour</div><div class="itab" onclick="it(this,'rt')">Kappabashi Kitchen Town</div></div>
+    <div class="ipanel on" id="rt-0">
+      <div class="lbl">The big walk: Asakusa → Hanayashiki → Kappabashi → Ueno Park → Yanaka</div>
+      <div class="desc">If energy allows, this is one of the great afternoon walks in Tokyo — a continuous thread of completely different neighborhoods, each with its own personality, connecting the ancient temple district to old-town Yanaka through the cultural heart of the city. Total distance ~4–5km, allow 90 min of walking plus stops. You'll pass through layers of Tokyo that most tourists never connect on foot.</div>
+      <div class="picks" style="margin-top:10px">
+        <div class="pick"><b>Step 1 — Hanayashiki (~10 min from Sensō-ji)</b><span>Japan's oldest amusement park (est. 1853) is a 5-min walk west of Sensō-ji through the Rokku entertainment district. See it even if you don't go in — the retro candy-colored façade is a genuine Tokyo time-warp. If the kids want to go in: ¥1,000 adults, ¥500 under-12, free under-7. Rides cost extra. About 19 attractions including Japan's oldest operating roller coaster (1953) and a traditional Japanese haunted house. Best for younger kids — scale is very small, nothing like Disney. 1–1.5 hrs if you go in.</span></div>
+        <div class="pick"><b>Step 2 — Kappabashi Kitchen Town (~5 min from Hanayashiki)</b><span>Walk 5 min northwest into the world's most concentrated street of professional kitchen supplies — 170 shops along an 800m strip selling everything imaginable for cooking and dining. Entered via a massive giant chef's head on the corner (unmissable). Look for the plastic food replica shops (Ganso Shokuhin Sample-ya is the most famous), where you can make your own fake tempura in a workshop (2,500 yen, reservations required). Also: world-class Japanese knives at Kama-Asa, beautiful ceramic bowls at Komatsuya, seasonal cookie molds at Yokoyama bakery supply. Most shops open 10am–6pm. Many closed Sundays — Monday is the better day for this, which is when you're there.</span></div>
+        <div class="pick"><b>Step 3 — Ueno Park (~10–15 min walk from Kappabashi)</b><span>Walk north through the Ueno area into the park's southern entrance. In late March during cherry blossom peak, the famous Sakura-dori Avenue is a 700m tunnel of 800 cherry trees overhead — one of the most dramatic sakura scenes in all of Japan. Shinobazu Pond at the park's south edge is quieter: cherry blossoms reflected in the water, a red pagoda on a small island, wild egrets and ducks. The Ueno Sakura Festival runs March 14–April 5, 2026 with food stalls, music, and illuminations until 10pm nightly. Walk through, don't rush.</span></div>
+        <div class="pick"><b>Step 4 — Ameyoko Market (~5 min, at Ueno Station)</b><span>A lively postwar street market under the elevated train tracks between Ueno and Okachimachi stations — originally a black market, now a dense, vibrant stretch of food stalls, dried goods, discount clothing, and snack vendors. Famous for cheap seafood, dried fruit and nut shops, and the general sensory chaos of old-town Tokyo commerce. A great 15-minute walk-through on the way north to Yanaka.</span></div>
+        <div class="pick"><b>Step 5 — Yanaka (~20–25 min walk from Ueno)</b><span>Continue north from Ueno through increasingly quiet residential streets, past small temples tucked between houses. You'll feel the city change as you walk — the noise drops, the streets narrow, wooden buildings appear. Enter from the Nippori Station side for the famous Sunset Steps (Yūyake-dandan) view over the rooftops before descending into Yanaka Ginza.</span></div>
+      </div>
+      <div class="box b-am" style="margin-top:10px"><strong>Time reality check:</strong> This full walk with stops takes 3.5–4 hours from Asakusa to Yanaka. If you've already spent 2 hours at Sensō-ji, plan to reach Yanaka around 4:30–5pm, giving you 1.5–2 hrs before dinner. That's enough. The walk is the experience — not a race.</div>
+    </div>
+    <div class="ipanel" id="rt-1">
+      <div class="lbl">Direct subway: Asakusa → Nippori</div>
+      <div class="desc">Asakusa Station (Ginza Line) → Ueno (1 stop, 4 min) → transfer to JR Yamanote Line → Nippori Station (2 stops, 5 min). Total: ~20 min including platform changes, ¥180/person. Or take a taxi directly from Asakusa to Nippori for ~¥1,000–1,400 for the group.</div>
+      <div class="box b-gr"><strong>When to take the subway:</strong> If the kids are flagging after Sensō-ji and the temple visit took longer than expected, the subway is the right call. Yanaka itself is the destination — the walk is a bonus layer for families with energy to spare. Either way you end up in the same place.</div>
+      <div class="lbl" style="margin-top:10px">Ueno-only option</div>
+      <div class="desc">Alternatively: Asakusa → Ueno (Ginza Line, 1 stop, 4 min, ¥180). Spend 30–45 min at Ueno Park for cherry blossoms and a quick Shinobazu Pond loop, then taxi or walk 20 min north to Yanaka. Gets you the best of Ueno without the full walk.</div>
+    </div>
+    <div class="ipanel" id="rt-2">
+      <div class="lbl">Hanayashiki — Japan's oldest amusement park (est. 1853)</div>
+      <div class="desc">Located a 5-min walk west of Sensō-ji, tucked behind Nakamise Street in the Rokku entertainment district. Built the same year Commodore Perry's ships arrived in Japan. Opened as a botanical garden, evolved into a zoo, became an amusement park in the post-war era. Now operated by Bandai Namco. About 19 attractions on a very compact footprint — the entire park is smaller than a single Disney "land."</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>The roller coaster</b><span>Japan's oldest operating roller coaster, installed in 1953. Deliberately preserved in its Showa-era colors and look. Slow by modern standards, but the historical context makes it genuinely interesting. Kids who know what it is find it thrilling for different reasons than speed.</span></div>
+        <div class="pick"><b>The haunted house</b><span>A traditional Japanese-style haunted house (obake yashiki) with a new attraction called "Curse of the Neck" as of July 2025. Dark, jump-scare style, very Japanese in its aesthetic. Kids who like haunted houses will love this. Kids who scare easily, avoid.</span></div>
+        <div class="pick"><b>Festival stall games</b><span>Traditional Japanese festival games (ennichi) — target shooting, ring toss, goldfish scooping. Very popular with tourists. The retro candy-colored aesthetic makes everything extremely photogenic. This is the most family-friendly section.</span></div>
+        <div class="pick"><b>Practical info</b><span>Entry: ¥1,000 adult, ¥500 under-12, free under-7. Rides cost extra tokens (or buy a day pass). Open 10am–6pm. Worth entering for 60–90 min if kids have energy after the temple. Worth peering through the gate even if you skip it. The façade alone is worth a photo.</span></div>
+      </div>
+      <div class="box b-gr" style="margin-top:8px"><strong>Verdict:</strong> Not a destination on its own — definitely not in the same conversation as Disneyland. But as a quick 60-min detour while you're already in Asakusa, the historical novelty is genuinely interesting and the retro atmosphere is like nothing else in Tokyo. The "reverse zoo" effect (you're inside, the rides are loose around you) is funny and charming.</div>
+    </div>
+    <div class="ipanel" id="rt-3">
+      <div class="lbl">Kappabashi Kitchen Town — the world's greatest kitchen street</div>
+      <div class="desc">A street you probably already know if you cook seriously: 170 shops along 800 meters between Ueno and Asakusa, selling everything used by Japan's professional restaurant industry. This is where Tokyo's chefs shop. Unlike most tourist streets, the goods here are genuinely professional-grade, and the prices reflect restaurant wholesale rather than souvenir markup. Open daily 10am–6pm; most shops closed Sundays — Monday March 23 is perfect.</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>Ganso Shokuhin Sample-ya</b><span>The famous plastic food replica shop — since 1932. The source of the hyper-realistic wax food models in restaurant windows throughout Japan. Kids can watch staff make them and buy keychains, magnets, and phone straps. Workshops to make your own fake tempura or ice cream sundae: ¥2,500, reservation required, held in Japanese but visual enough to follow. Kids aged 6+ welcome.</span></div>
+        <div class="pick"><b>Kama-Asa knife shop</b><span>One of Tokyo's most respected knife stores, spread across two floors and two buildings. Japanese knives world-renowned for their precision — you can have your name engraved on the blade on the spot. Prices from ¥6,800 upward. The staff speak English and will let you handle the knives. If you're buying one knife to bring home from Japan, buy it here.</span></div>
+        <div class="pick"><b>The giant chef's head</b><span>A massive sculpture of a chef's head on the corner of Kappabashi and Asakusa-dori — the street's unofficial landmark and one of Tokyo's most delightfully strange photo opportunities. You genuinely cannot miss it. Great family photo.</span></div>
+        <div class="pick"><b>What else to buy</b><span>Ceramic bowls (Komatsuya — stacked floor to ceiling, bargain prices), Japanese bento boxes (¥2,000–5,000 for beautiful lacquered versions), seasonal cookie molds in cherry blossom shapes (Yokoyama), chopsticks in every material imaginable, bamboo steamers, cast iron teapots, and hand-painted plates.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>Walk: Kappabashi → Ueno Park → Ameyoko → Yanaka (~70 min total from Asakusa, multiple stops) · OR subway direct: Asakusa → Nippori (~20 min)</span><div class="conn-line"></div></div>
+
+<!-- UENO PARK as its own stop -->
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🌸</div><div class="stop-meta"><div class="stop-name">Ueno Park + Ameyoko Market</div><div class="tags"><span class="tag tt">On the walk route, ~45–60 min</span><span class="tag tk">Cherry blossom tunnel · Ueno Zoo · Panda</span><span class="tag tf">Ameyoko street food</span><span class="tag tg">Sakura Festival runs to Apr 5</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'up')">The Park</div><div class="itab" onclick="it(this,'up')">Ueno Zoo</div><div class="itab" onclick="it(this,'up')">Ameyoko Market</div><div class="itab" onclick="it(this,'up')">Cherry Blossoms</div></div>
+    <div class="ipanel on" id="up-0">
+      <div class="desc">Tokyo's most beloved public park — 300 acres in the heart of the city, home to Japan's oldest zoo, a cluster of world-class museums, multiple shrines and temples, and 1,200 cherry trees that make it the most famous hanami spot in Tokyo. In late March during cherry blossom peak, the park transforms into a festival: Sakura-dori Avenue becomes a 700m tunnel of blossoms overhead, food stalls line the paths, 800 paper lanterns glow at night, and the city arrives in force for one of the great seasonal celebrations in Japan. Even a 30-min walk through is transformative.</div>
+      <div class="box b-am"><strong>Ueno Sakura Festival 2026:</strong> Running March 14–April 5. Illuminations nightly until 10pm along Shinobazu Pond. Food stalls, music performances on open-air stages. Free entry to the park.</div>
+    </div>
+    <div class="ipanel" id="up-1">
+      <div class="desc">Japan's oldest zoo (opened 1882) — Tokyo's most-visited zoo and home to the only giant pandas in Tokyo. Also: red pandas, gorillas, tigers, Asian elephants, polar bears, penguins, and 400+ species total. The panda viewing requires a separate timed entry ticket (book in advance online or grab one at the gate in the morning). Red pandas are a crowd favorite with kids — small, furry, chaotic little animals that move in ways that seem engineered to delight children.</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>Giant pandas</b><span>Tokyo's only pandas, housed in a purpose-built facility. Timed entry tickets required — book the first morning slot online before your trip if this is a priority. Pandas are most active in the morning.</span></div>
+        <div class="pick"><b>Red pandas ⭐</b><span>Far easier to see than the giant pandas, and genuinely more entertaining — they move constantly and seem engineered to delight children. The enclosure is well-positioned for viewing. A highlight for most families.</span></div>
+        <div class="pick"><b>Practical info</b><span>Open Tue–Sun 9:30am–5pm (closed Mon). ¥600 adult, kids under 12 FREE. In late March cherry blossoms bloom throughout the zoo grounds — you can see animals and sakura simultaneously, which is uniquely Japanese and quite spectacular.</span></div>
+      </div>
+      <div class="box b-pu" style="margin-top:8px"><strong>Timing note:</strong> If you want the zoo, come early on Day 2 — it opens at 9:30am. It's only 4 min by subway from Asakusa (Ginza Line, 1 stop to Ueno). You could do zoo in the morning and Tsukiji in the afternoon if the day were restructured, OR visit the zoo briefly at 4pm on the walk (it closes at 5pm on this route). Alert: Monday is the zoo's closing day — check this since Day 2 is Monday. Confirm opening on Tokyo Zoo's website before going.</div>
+    </div>
+    <div class="ipanel" id="up-2">
+      <div class="desc">Immediately adjacent to Ueno Station, running under the JR elevated tracks between Ueno and Okachimachi — Ameyoko (short for "Ameya Yokocho," Candy Shop Lane) is a postwar black market that evolved into Tokyo's most chaotic and vibrant street market. Two long blocks packed with seafood vendors, dried goods shops, snack stalls, discount clothing, cosmetics, and the general energy of old-town Tokyo commerce at full volume.</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>What to eat here</b><span>Freshly grilled skewers, takoyaki (octopus balls), tuna toro rice bowls from the seafood vendors, dried mangoes and nuts, fresh fruit, and some of the most affordable seafood snacks in Tokyo. Budget ¥500–1,000 for a walk-through snack.</span></div>
+        <div class="pick"><b>Long-established tea shop</b><span>A famous matcha soft serve shop in Ameyoko serves rich, properly bitter matcha ice cream — one of the better versions in this area. Look for queues.</span></div>
+        <div class="pick"><b>The experience</b><span>This is old Tokyo at maximum sensory intensity — vendors calling out, narrow aisles, fish on ice, incense, dried goods hanging from storefronts. Walk through at a slow wander rather than with purpose. 15–20 min is enough. It's more atmosphere than destination.</span></div>
+      </div>
+    </div>
+    <div class="ipanel" id="up-3">
+      <div class="desc">Ueno Park in late March during cherry blossom peak is one of the top three hanami spots in all of Japan. Over 1,200 trees of 40 varieties bloom simultaneously — but the main event is Sakura-dori Avenue, a 700m central promenade with 800 cherry trees creating an overhead arch of blossoms. Walking under it feels like being inside a pink cloud. At the park's south end, Shinobazu Pond adds reflection — blossoms mirrored in still water, the red Benten-do temple pagoda framed in the distance, egrets fishing the shallows.</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>Sakura-dori Avenue</b><span>The main 700m promenade — walk it in both directions if time allows. This is the most famous sakura tunnel in Tokyo. In the afternoon it's packed, but the density of people is part of the festival atmosphere. Food stalls line both sides.</span></div>
+        <div class="pick"><b>Shinobazu Pond</b><span>South end of the park. Quieter than the main avenue, more photogenic — blossoms reflected in the water, the red pagoda on a small island (Benten-do Temple), wild birds including egrets and cormorants. A calmer, more contemplative sakura experience.</span></div>
+        <div class="pick"><b>Kiyomizu Kannon-do Temple</b><span>A small 17th-century temple on a hill inside the park — a miniature version of Kyoto's famous Kiyomizu-dera, with a raised wooden balcony giving views over Shinobazu Pond and the cherry blossoms below. One of the park's most photogenic spots and largely overlooked by tourists.</span></div>
+        <div class="pick"><b>Night illuminations</b><span>Sakura Festival illuminations run until 10pm nightly through April 5. If you return to Ueno after dinner in Yanaka, the illuminated blossoms over Shinobazu Pond at night are a completely different and extraordinary experience — one of the best evening activities in Tokyo during cherry blossom season.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>20–25 min walk north from Ueno through quiet residential streets → Nippori Station area → Yanaka</span><div class="conn-line"></div></div>
+
+<!-- YANAKA — fully expanded -->
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🏘️</div><div class="stop-meta"><div class="stop-name">Yanaka — Old Tokyo on Foot</div><div class="tags"><span class="tag tt">4:30–6:30pm</span><span class="tag tk">Cats · Last shogun's grave · Temple counting</span><span class="tag tc">Yanaka Coffee · Guru Guru Gelato</span><span class="tag ts">Yanaka Ginza · Artisan workshops</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'yn')">The Neighborhood</div><div class="itab" onclick="it(this,'yn')">What You Experience</div><div class="itab" onclick="it(this,'yn')">Kids Activities</div><div class="itab" onclick="it(this,'yn')">Coffee & Sweets</div><div class="itab" onclick="it(this,'yn')">Shopping</div></div>
+    <div class="ipanel on" id="yn-0">
+      <div class="desc">Yanaka is the Tokyo that survived. The March 1945 US firebombing raids that destroyed much of the city, and the 1923 Great Kanto Earthquake that flattened large swathes of it before that, largely spared this hillside neighborhood. The result is something genuinely rare in one of the world's most intensely developed cities: an intact pre-war residential district where the bones of old Edo are still visible.</div>
+      <div class="desc" style="margin-top:8px">Walking through Yanaka feels like a gradual decompression from modern Tokyo. The streets narrow. Buildings stay low — one or two floors, not twenty. Wooden machiya townhouses appear between the newer structures. Small family-run temples (over 70 of them in a tiny area) sit tucked between houses, their stone lanterns overgrown with moss. Cats sit on walls and gates with the proprietorial ease of longtime residents. And Yanaka Ginza — the main shopping street — is a 200m covered shotengai (arcade) that has been here since the postwar era, selling dried fish, fresh tofu, ceramic goods, handmade umbrellas, and cat-themed everything to a mix of locals and curious visitors.</div>
+      <div class="lbl" style="margin-top:10px">The walk-in route from Nippori</div>
+      <div class="desc">Exit Nippori Station and head west along the top of the ridge. Almost immediately you hit the famous Sunset Steps (Yūyake-dandan) — a broad staircase descending into Yanaka Ginza, named for the view of Tokyo's rooftops at dusk that was once unobstructed all the way to Mount Fuji. At the top of the steps, turn and look south over the low rooftops before you descend. This is one of the great quiet views in Tokyo. Then walk down into the shopping street and go wherever looks interesting.</div>
+      <div class="box b-am" style="margin-top:8px"><strong>The key to Yanaka:</strong> Don't rush it and don't follow a list. The point of Yanaka is wandering — turning down a small lane because a cat is sitting on a gate, finding a tiny temple you didn't expect, stumbling into a pottery workshop with the door open. The more you try to "do" Yanaka efficiently, the more you miss it.</div>
+    </div>
+    <div class="ipanel" id="yn-1">
+      <div class="desc">The neighborhood experience itself is the activity here — but here are the specific things to look for and do:</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>Yanaka Cemetery</b><span>Directly south of the Sunset Steps — one of Tokyo's largest cemeteries but atmospheric rather than grim, especially in late March when the 500+ cherry trees within the grounds are in full bloom. Wide tree-lined paths, stone lanterns, old cherry trees bending over graves. One of the most beautiful hanami spots in the entire Yanaka-Ueno area, and almost entirely missed by tourists because they hear "cemetery" and skip it.</span></div>
+        <div class="pick"><b>The last shogun's grave</b><span>Tokugawa Yoshinobu — the last samurai ruler of Japan, who peacefully surrendered power in 1868 ending 250 years of shogunate rule — is buried in Yanaka Cemetery. His grave is remarkably modest for someone who changed the course of Japanese history. Find it on Google Maps beforehand and let kids navigate to it. The story of the samurai era ending here and what came next is genuinely gripping.</span></div>
+        <div class="pick"><b>Cat spotting competition</b><span>Yanaka is famous across Tokyo for its free-roaming neighborhood cats — they sit on walls, sleep in doorways, claim entire sections of alleyway. They are part of the neighborhood's character. Whoever spots the most cats in 30 minutes wins dessert. Most kids find 4–6 real cats in an hour of wandering. Many of the shops also sell cat-themed goods that reinforce the theme.</span></div>
+        <div class="pick"><b>Temple counting</b><span>Over 70 temples in a tiny area — most of them tiny, family-run, and completely unvisited by tourists. Challenge kids to find 5 different temple gates (torii or sanmon) in the winding side streets. The gates range from grand stone structures to small wooden ones half-hidden behind bamboo. This turns the wandering into a game.</span></div>
+        <div class="pick"><b>SCAI The Bathhouse</b><span>A contemporary art gallery operating inside a perfectly preserved traditional bathhouse (sento) from the Edo period — the contrast of cutting-edge contemporary art (Ai Weiwei, Anish Kapoor have all shown here) inside a building designed for communal bathing is one of the great Tokyo surprises. Free or low admission depending on exhibition. Worth a 15-min peek.</span></div>
+      </div>
+    </div>
+    <div class="ipanel" id="yn-2">
+      <div class="desc"><strong>Yanaka Coffee-ten</strong> — a small roastery on Yanaka Ginza selling beans from around the world. Excellent iced coffee to go; the house blend is fruity and mellow. Walk and sip — no seating inside, just a takeaway window essentially.</div>
+      <div class="desc" style="margin-top:8px"><strong>Guru Guru Gelato</strong> — right on Yanaka Ginza. Excellent matcha and melon gelato, gluten-free crepes, and a cozy wood interior with actual seating. The matcha float is the local favorite. Kids and adults both love this stop. One of the few places in Yanaka where you can sit down with everyone.</div>
+      <div class="box b-am" style="margin-top:8px"><strong>The old lady's stall:</strong> Multiple reviewers independently describe an older woman on a side stall selling salted snacks — wasabi peas, sembei rice crackers. Cash only. She can't be found on any map and isn't listed anywhere officially, but people seek her out specifically. The snacks are reportedly exceptional and she's described as deeply lovely. This is the kind of encounter Yanaka is built for.</div>
+      <div class="box b-gr" style="margin-top:8px"><strong>Also nearby:</strong> Several small retro cafés in Yanaka serve drip coffee surrounded by vintage furniture and vinyl records — the quintessential Yanaka café experience is unhurried, local, slightly time-warped. Ask Google Maps for "Yanaka café" and walk toward whichever looks most appealing from the outside.</div>
+    </div>
+    <div class="ipanel" id="yn-3">
+      <div class="picks">
+        <div class="pick"><b>Yanaka Ginza shops</b><span>~70 shops along the 200m covered arcade: dried fish, fresh-pressed tofu, handmade ceramics, bamboo goods, traditional sweets, local sake, craft goods. Prices are local — not tourist markup. This is where the neighborhood shops, not where tourists come to buy souvenirs, though you can buy great souvenirs here.</span></div>
+        <div class="pick"><b>Cat goods shops</b><span>Multiple shops dedicated entirely to cat-themed ceramics, textiles, cards, jewelry, and illustrated goods. Yanaka's unofficial brand. The best shops have beautiful hand-painted pieces rather than mass-produced character goods. Look for the ones where someone is clearly making the items themselves.</span></div>
+        <div class="pick"><b>Artisan workshops</b><span>Several small workshops operate traditional crafts — pottery, woodworking, lacquerware, textile dyeing. Some have doors open during working hours and you can watch. Pieces for sale are genuinely one-of-a-kind. Nothing here has a SKU number or a brand.</span></div>
+        <div class="pick"><b>Yanaka Beer Hall</b><span>A converted historic building operating as a neighborhood craft beer pub. Very local, very casual, extremely good. The perfect adults-only end-of-day stop while kids eat nearby. No tourist atmosphere whatsoever.</span></div>
+        <div class="pick"><b>Yanaka is not a shopping destination</b><span>Unlike Harajuku or Nakamise, Yanaka isn't a place you go to buy things specifically. It's a place you go to wander, and sometimes you buy something small along the way. The best things you take home from Yanaka are photos, memories of the cats, and the feeling of having found a Tokyo that most people don't see.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- end day 2 -->
+
+<!-- ═══════════════════════════════════════════════════════════ DAY 3 ═══ -->
+<div class="day-panel" id="p2">
+<div class="day-head">
+  <h2>Tokyo Disneyland</h2>
+  <p>Tuesday March 24 · Depart ANA InterContinental 8:00am sharp · Park opens 8:00am · Cherry blossom season crowds</p>
+</div>
+
+<div class="alert"><strong>Critical:</strong> Late March = cherry blossom crowds. Arrive at park opening (8am). The first 90 minutes are the best window for top rides before queues explode. Buy Disney Premier Access for Beauty & the Beast the moment the app lets you.</div>
+
+<div class="depart">
+  <div class="depart-title"><span class="icon">🏨</span> ANA InterContinental → Tokyo Disneyland (Maihama)</div>
+  <div class="dist-badge">📍 21 km from hotel · Train is the best option</div>
+  <div class="routes">
+    <div class="route">
+      <div class="route-label">Train (recommended)</div>
+      <div class="route-time">~47 min · ¥400–500/person</div>
+      <div class="route-detail">1 min walk to Tameike-sanno → Ginza Line → Tokyo Station (transfers available) → JR Keiyo Line → Maihama Station (16 min direct) → 5 min walk to park gate. Trains run every 5 min.</div>
+    </div>
+    <div class="route">
+      <div class="route-label">Taxi · Not recommended</div>
+      <div class="route-time">~55 min · ¥11,000–14,000 total</div>
+      <div class="route-detail">You'd need 2 large taxis at ¥5,500–7,000 each. Morning expressway traffic is unpredictable. For an 8am park opening arrival, the train is significantly more reliable and faster.</div>
+    </div>
+  </div>
+  <div class="box b-re" style="margin-top:10px"><strong>Depart by 8:00am sharp.</strong> Arriving at park opening is the single most important logistics decision of Day 3. The first 90 minutes determine whether you ride the top attractions or spend the day in queues.</div>
+</div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🏰</div><div class="stop-meta"><div class="stop-name">Rules of the Road — Tokyo Disneyland</div><div class="tags"><span class="tag ta">Must read before arrival</span><span class="tag tk">Active kids strategy</span><span class="tag tf">Japan-only food</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'dr')">App & Tickets</div><div class="itab" onclick="it(this,'dr')">Day Timeline</div><div class="itab" onclick="it(this,'dr')">Food</div><div class="itab" onclick="it(this,'dr')">vs US Disney</div></div>
+    <div class="ipanel on" id="dr-0"><div class="lbl">Tokyo Disney Resort App — download before leaving the US</div><div class="desc">Controls everything: queue systems, show times, food ordering, park maps. All 6 family members need to be linked in the same account or group.</div><div class="box b-re"><strong>Disney Premier Access (DPA) — paid skip-the-line:</strong> Buy DPA for Beauty & the Beast Castle the moment the app releases it (usually at park opening 8am). ¥1,500–2,000 per ride per person — for 6 people that's ¥9,000–12,000 per ride. Non-negotiable for the top rides. Queue without DPA hits 150+ min.</div><div class="box b-am" style="margin-top:8px"><strong>Standby Pass — free timed queue:</strong> For certain rides, grab a free timed slot through the app and return later. Different from DPA — it's free. Grab Standby Passes for Monsters Inc Ride & Go Seek and Pooh's Hunny Hunt as early as possible.</div><div class="box b-gn" style="margin-top:8px"><strong>Character meets:</strong> Book through the app. Mickey, Minnie, and main characters fill up fast — grab your slot when you first enter at 8am.</div></div>
+    <div class="ipanel" id="dr-1">
+      <div class="tl-row"><div class="tl-time">8:00am</div><div class="tl-body"><strong>Enter gates.</strong> Buy DPA for Beauty & the Beast on the app immediately. Then go directly to Big Thunder Mountain or Pooh's Hunny Hunt while lines are still short.</div></div>
+      <div class="tl-row"><div class="tl-time">8:30am</div><div class="tl-body"><strong>Toontown first.</strong> The most active-kid-friendly zone — Chip & Dale Treehouse playground, Donald's Boat splash zone, Minnie's House, Roger Rabbit's Car Toon Spin. Before 9:30am, lines are minimal or nonexistent.</div></div>
+      <div class="tl-row"><div class="tl-time">10:00am</div><div class="tl-body"><strong>Beauty & the Beast Castle</strong> with your DPA window. The park's crown jewel — a groundbreaking trackless dark ride through every scene of the film. This ride alone is worth the trip to Tokyo Disneyland.</div></div>
+      <div class="tl-row"><div class="tl-time">11:00am</div><div class="tl-body"><strong>Parade or character meet.</strong> Check app for times. The Dreaming Up! parade is spectacular and unique to Tokyo. Claim your spot 30 min early.</div></div>
+      <div class="tl-row"><div class="tl-time">11:30am</div><div class="tl-body"><strong>Lunch early</strong> before noon rush. Hungry Bear Restaurant for Japanese curry (a crowd favorite). Or Mickey waffles while walking.</div></div>
+      <div class="tl-row"><div class="tl-time">1:00pm</div><div class="tl-body"><strong>Afternoon rides.</strong> Haunted Mansion, Pirates of the Caribbean, Space Mountain — queues actually better 1–4pm than morning for these. Monsters Inc if Standby Pass window arrives.</div></div>
+      <div class="tl-row"><div class="tl-time">4:00pm</div><div class="tl-body"><strong>Toontown reset.</strong> Return to the playground — much less crowded in late afternoon. Very active kids who've been on rides all day often just want to run and climb. Let them.</div></div>
+      <div class="tl-row"><div class="tl-time">6:00pm</div><div class="tl-body"><strong>Fantasyland at dusk.</strong> The castle looks extraordinary at golden hour. Line up for evening parade + castle illumination early.</div></div>
+      <div class="tl-row"><div class="tl-time">8:00pm</div><div class="tl-body"><strong>Nighttime spectacular.</strong> Tokyo Disneyland's illumination and fireworks are exceptional. Then exit immediately after — the park crowds significantly at closing.</div></div>
+    </div>
+    <div class="ipanel" id="dr-2"><div class="picks"><div class="pick"><b>Mickey waffles ⭐</b><span>Tokyo version has seasonal flavors — late March often cherry blossom or strawberry variant. Essential photo and food moment. Available at multiple spots throughout the park.</span></div><div class="pick"><b>Japanese curry</b><span>Hungry Bear Restaurant — unique to Tokyo Disneyland. Mild, rich, over rice. Kids universally love it. Go at 11:30am or 1:30pm to avoid peak crush.</span></div><div class="pick"><b>Alien mochi ⭐</b><span>Little Green Men mochi from Tomorrowland — Toy Story alien shaped, soft, slightly sweet. Viral, unique to Tokyo. ¥700 for a set. Do not leave without these.</span></div><div class="pick"><b>Popcorn buckets</b><span>Tokyo Disneyland popcorn is legendary — curry, caramel, seasonal variants. Collectible character buckets (¥2,500–3,500) are reusable. Queue for the flavor you want.</span></div></div><div class="box b-am" style="margin-top:8px"><strong>Active kids break strategy:</strong> Build in two unstructured stops: (1) Toontown playground before 10am, (2) benches in Fantasyland mid-afternoon. Very active kids crash without structured breaks. The Toontown playground is large, imaginative, and a genuine energy dump.</div></div>
+    <div class="ipanel" id="dr-3"><div class="picks"><div class="pick"><b>Unique rides (no US equivalent)</b><span>Beauty & the Beast Castle (trackless, groundbreaking), Pooh's Hunny Hunt (trackless), Monsters Inc Ride & Go Seek (laser tag dark ride), Buzz Lightyear Astro Blasters (harder than US version). Must-dos even if you've been to Anaheim.</span></div><div class="pick"><b>Toontown</b><span>Much larger than the US version. Roger Rabbit's Car Toon Spin, a large interactive playground, Donald's Boat splash zone. For very active young kids, this zone alone could fill half a day.</span></div><div class="pick"><b>Cleanliness & service</b><span>Cast members are the global gold standard. Immaculately maintained. Bathrooms cleaned every 30 min. Queue lines fully themed and comfortable. Widely considered the best Disney park in the world.</span></div><div class="pick"><b>No alcohol</b><span>Unlike US and European Disney parks, no alcohol served anywhere. Fully family-focused. Food quality is notably higher than US parks.</span></div><div class="pick"><b>Japan-only merch</b><span>Completely different from US parks — Japan-exclusive designs, kimono-style character outfits, beautiful packaging. Budget significant time and money at entrance shops at day's end.</span></div><div class="pick"><b>Queue system</b><span>DPA (paid, instant) + Standby Pass (free, timed) + regular queue. All through the app. More sophisticated than US Genie+. Read the app before you arrive.</span></div></div></div>
+  </div>
+</div>
+</div><!-- end day 3 -->
+
+<!-- ═══════════════════════════════════════════════════════════ DAY 4 ═══ -->
+<div class="day-panel" id="p3">
+<div class="day-head">
+  <h2>teamLab Borderless → Imperial Palace → Kyoto</h2>
+  <p>Wednesday March 25 · teamLab reservation 10:00am · Imperial Palace pitstop ~12:45–2:00pm · Train departs Shinagawa 4:07pm · Leave hotel 3:00pm</p>
+</div>
+
+<div class="alert"><strong>Revised timeline:</strong> Leave Imperial Palace by 2:00pm → back to hotel ~2:15pm (bags) → taxi departs 3:00pm → Shinagawa ~3:20pm. The 4:07pm train gives you 45 min inside the station — enough buffer. Set phone alarms at teamLab (12:15pm exit) and at the Palace (2:00pm hard out).</div>
+
+<div class="depart">
+  <div class="depart-title"><span class="icon">🏨</span> ANA InterContinental → teamLab Borderless (Azabudai Hills)</div>
+  <div class="dist-badge">📍 1.4 km from hotel · Walking distance — use your feet!</div>
+  <div class="routes">
+    <div class="route">
+      <div class="route-label">Walk (best option)</div>
+      <div class="route-time">~18 min on foot</div>
+      <div class="route-detail">Both are in Minato — very close neighbors. Walk south on Gaien-Higashi Dori → right on Roppongi-dori → 18 min total. A beautiful morning stroll through Akasaka. No trains, no taxis needed.</div>
+    </div>
+    <div class="route">
+      <div class="route-label">Taxi (only if checkout bags)</div>
+      <div class="route-time">~8 min · ¥800–1,000</div>
+      <div class="route-detail">If checking out with luggage: taxi to Azabudai Hills Garden Plaza B, drop bags back at hotel for storage, collect at 2:30pm before Shinagawa. ANA InterContinental holds bags without issue.</div>
+    </div>
+  </div>
+  <div class="box b-te" style="margin-top:10px"><strong>Luggage tip:</strong> Ask the hotel to store your bags until ~2:30pm. Collect them by taxi on the way to Shinagawa. This keeps your morning completely free and unencumbered.</div>
+</div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🎨</div><div class="stop-meta"><div class="stop-name">teamLab Borderless — 10:00am reservation</div><div class="tags"><span class="tag tt">10:00am–12:30pm</span><span class="tag tk">Athletics Forest ⭐ made for active kids</span><span class="tag ta">Exit by 12:30pm</span><span class="tag tc">Tea house inside</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'tl')">The Experience</div><div class="itab" onclick="it(this,'tl')">For Active Kids</div><div class="itab" onclick="it(this,'tl')">Rules & Logistics</div><div class="itab" onclick="it(this,'tl')">After teamLab</div></div>
+    <div class="ipanel on" id="tl-0"><div class="desc">An immersive digital art museum where walls, floors, and ceilings dissolve into flowing light and sound. No boundaries between rooms or artworks. The Azabudai Hills location (2024 reopening, relocated from Odaiba) is denser and more intricate than the original. Budget 2–2.5 hours inside.</div><div class="box b-am"><strong>Key zones:</strong> Forest of Resonating Lamps (mirrors and color-shifting lanterns that react to your presence), Crystal Universe (infinite LED tunnel you walk through), Athletics Forest (rope climbing, bouncing floors, interactive walls — built for active kids), teamLab Tea House (interactive matcha ceremony where digital art responds to your cup).</div></div>
+    <div class="ipanel" id="tl-1"><div class="box b-pu"><strong>Athletics Forest is made for your kids:</strong> An entire zone designed for physical play — rope climbing, bouncing floors, interactive walls you run at and change. "The boundary between art and the body disappears." Very active kids lose their minds here. Budget 30–40 min in this zone alone.</div><div class="box b-te" style="margin-top:8px"><strong>Interactive walls kids discover:</strong> In several rooms, touching the light on walls or floor changes the art — flowers bloom, patterns shift, colors respond to your hands and feet. Kids who figure this out immediately start experimenting and teaching each other. It becomes a game without anyone telling them.</div><div class="box b-bl" style="margin-top:8px"><strong>The Flower Forest in late March:</strong> A massive room where digital flowers bloom and fall around you, changing with the real seasons. In late March: cherry blossoms. Your family standing in a room of falling digital sakura petals on March 25th = the best photo of the entire trip.</div></div>
+    <div class="ipanel" id="tl-2"><div class="lbl">What to wear</div><div class="desc">White or light-colored clothing — the light projections show on your body and the art literally wraps around you. Avoid dark clothes. Wear socks — some zones require shoe removal.</div><div class="lbl">No set path</div><div class="desc">There is no correct route. Rooms connect unexpectedly. You will get "lost" — this is intentional and the entire point. Don't follow a map. Move toward whatever looks interesting.</div><div class="box b-re"><strong>Exit alarm:</strong> Set your phone alarm for 12:15pm. Leave teamLab by 12:30pm at the latest. The Crystal Universe is beautiful and will try to keep you. Do not let it.</div></div>
+    <div class="ipanel" id="tl-3"><div class="lbl">12:30–12:45pm — lunch at Azabudai Hills</div><div class="desc">teamLab is inside this complex. Grab a quick lunch in the Garden Plaza or the basement food court before heading out. The rooftop terrace has a free Tokyo Tower view if anyone wants a 10-min stop. Then head to the Imperial Palace — see the stop below.</div><div class="box b-gr"><strong>Timing note:</strong> Keep lunch to 45 min max. Azabudai is 15 min taxi from the Palace, and you want to arrive there by ~12:45–1:00pm to have a full hour before the 2:00pm exit alarm.</div></div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>Taxi from Azabudai Hills → Imperial Palace East Gardens (~15 min, ¥1,200–1,500) · Arrive ~12:45pm</span><div class="conn-line"></div></div>
+
+<!-- IMPERIAL PALACE PITSTOP -->
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🏯</div><div class="stop-meta"><div class="stop-name">Imperial Palace — Outside View + East Gardens</div><div class="tags"><span class="tag tt">12:45–2:00pm · Hard exit at 2:00pm</span><span class="tag tg">Free entry · No reservation needed</span><span class="tag tk">Nijubashi bridge · Edo Castle ruins · Cherry blossoms</span><span class="tag ta">⚠️ Gardens closed Mondays & Fridays — Wed Mar 25 is OPEN</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'ip')">What You'll See</div><div class="itab" onclick="it(this,'ip')">The 75-Min Route</div><div class="itab" onclick="it(this,'ip')">Logistics</div><div class="itab" onclick="it(this,'ip')">Kids Angle</div></div>
+    <div class="ipanel on" id="ip-0">
+      <div class="desc">The Imperial Palace — home of Japan's Emperor — sits on the former site of Edo Castle in the center of Tokyo, surrounded by a wide moat and stone walls that have stood for 350+ years. The actual palace interior is closed to the public almost year-round, but the exterior view from the plaza and the East Gardens (open to the public free of charge) give you a genuinely impressive slice of both feudal and modern Japan. In late March, cherry blossoms line the moat and bloom throughout the gardens — the combination of stone castle walls, water reflections, and sakura is quintessentially Japanese and completely unlike anything else in Tokyo.</div>
+      <div class="lbl" style="margin-top:10px">The two things everyone comes for</div>
+      <div class="picks">
+        <div class="pick"><b>Nijubashi (Double Bridge) view ⭐</b><span>The most iconic image of the Imperial Palace — two stone bridges arching over the moat in front of the Fushimi-yagura watchtower. Visible from the plaza outside the main gate without entering anywhere. This is the photo op. It takes about 10 minutes to walk from the taxi drop-off on the palace perimeter to this view. Free, no tickets, always accessible.</span></div>
+        <div class="pick"><b>Chidorigafuchi Moat — cherry blossom walk</b><span>The northwestern moat of the palace, lined with cherry trees that in late March create one of the most spectacular hanami corridors in Tokyo. A wide, calm walkway along the water's edge with blossoms overhead and reflected in the moat below. 10-min walk from the main plaza. In a different category from any other cherry blossom spot you'll see — the scale and the historical setting together are extraordinary.</span></div>
+      </div>
+    </div>
+    <div class="ipanel" id="ip-1">
+      <div class="desc">With 75 minutes (12:45–2:00pm), here's the most efficient route to see the essential things without rushing:</div>
+      <div class="tl-row"><div class="tl-time">12:45</div><div class="tl-body"><strong>Taxi drop-off at Kokyo Gaien plaza</strong> (the large public square in front of the main gate). Walk toward the moat — Nijubashi bridge view is right in front of you. Photos. 10 min.</div></div>
+      <div class="tl-row"><div class="tl-time">1:00</div><div class="tl-body"><strong>Walk to Ote-mon Gate</strong> (5 min from the plaza) — the main entrance to the East Gardens. Free entry, no ticket, hand in a numbered card at the gate and return it on exit.</div></div>
+      <div class="tl-row"><div class="tl-time">1:05</div><div class="tl-body"><strong>Inside East Gardens:</strong> Wide lawns where Edo Castle's main keep once stood — nothing above ground now but the stone foundation platform, which you can climb. The emptiness is intentional and eerie in a good way. Cherry trees throughout at late-March peak.</div></div>
+      <div class="tl-row"><div class="tl-time">1:25</div><div class="tl-body"><strong>Ninomaru Garden</strong> (a 5-min stroll from the keep platform) — designed in the Edo period, restored 1968. Traditional Japanese strolling garden with irises, stone paths, a small pond. Genuinely beautiful for 10 min of quiet wandering.</div></div>
+      <div class="tl-row"><div class="tl-time">1:40</div><div class="tl-body"><strong>Exit Ote-mon Gate → walk or taxi south.</strong> If energy allows: 10-min walk west toward Chidorigafuchi for the moat cherry blossom walk. If tight on time, taxi directly to the hotel from here.</div></div>
+      <div class="tl-row"><div class="tl-time">2:00</div><div class="tl-body"><strong>⚠️ Hard exit.</strong> In taxi toward ANA InterContinental (15–20 min, ¥1,200–1,800). Collect bags. Depart hotel at 3:00pm for Shinagawa.</div></div>
+    </div>
+    <div class="ipanel" id="ip-2">
+      <div class="picks">
+        <div class="pick"><b>Getting there from Azabudai Hills</b><span>Taxi ~15 min, ¥1,200–1,500. Tell driver "Kokyo Gaien" (皇居外苑) — the public plaza in front of the main palace gate. This drops you directly in front of the Nijubashi view.</span></div>
+        <div class="pick"><b>East Gardens hours on March 25</b><span>Open 9:00am–5:00pm. Wednesday is open (closed Mondays and Fridays — you're safe on Wednesday). Free entry. No reservation needed. Hand in a numbered card at Ote-mon gate, return it on exit. Opens to the public year-round.</span></div>
+        <div class="pick"><b>Getting from Palace → Hotel → Shinagawa</b><span>Taxi from Ote-mon Gate to ANA InterContinental: ~15–20 min, ¥1,200–1,800. Collect pre-stored bags (takes 5 min with hotel staff's help if you alert them in advance). Then second taxi to Shinagawa: ~20–25 min, ¥2,000–2,500. Leave hotel by 3:00pm. Arrive Shinagawa ~3:20pm. Shinkansen gates by 3:30pm — 37 min before departure.</span></div>
+        <div class="pick"><b>Skip Chidorigafuchi if behind schedule</b><span>The moat walk is beautiful but it adds 20+ min. If you exit the Gardens at 1:40pm instead of 1:30pm, skip Chidorigafuchi and go straight to the hotel. The Nijubashi view and the East Gardens alone are worth the stop.</span></div>
+      </div>
+      <div class="box b-re" style="margin-top:10px"><strong>Set a hard alarm at 2:00pm.</strong> The Palace is the kind of place you wander longer than planned. The 2:00pm exit is non-negotiable given the train.</div>
+    </div>
+    <div class="ipanel" id="ip-3">
+      <div class="desc">The Imperial Palace grounds are one of the most geographically significant and historically layered sites in all of Japan — this is where 250 years of samurai rule was administered, where the last shogun surrendered power to Emperor Meiji in 1868, and where Japan's modern transformation began. That doesn't look like much on the ground (it's mostly lawn and walls), but the context changes what you're seeing.</div>
+      <div class="picks" style="margin-top:8px">
+        <div class="pick"><b>The stone platform where the castle keep stood</b><span>You can climb the original stone foundation of the main Edo Castle keep — the tower itself burned down in 1657 and was never rebuilt. Standing on top of it with the Tokyo skyline visible in every direction: this was the most powerful military position in Japan for 250 years, controlled by the Tokugawa shoguns your kids heard about in Yanaka. Now you're standing on it.</span></div>
+        <div class="pick"><b>"This is where the samurai lived"</b><span>Kids who learned about the last shogun in Yanaka Cemetery (Day 2) will make the connection — the same Tokugawa family whose last member is buried in Yanaka ran Japan from this location. This is the end of that story. Worth making explicit.</span></div>
+        <div class="pick"><b>The moat</b><span>The stone walls and wide moat were built to be militarily impenetrable — 17th-century Tokyo equivalent of a fortress. Kids who get into the engineering (how do you build that? how deep is it? what was it like to attack this?) will find it engaging. The answer to all three: very deliberately, very deep, and essentially impossible.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="conn"><div class="conn-line"></div><span>Taxi: Imperial Palace → ANA InterContinental (~15–20 min) · Collect bags · Depart hotel 3:00pm · Taxi to Shinagawa (~20–25 min)</span><div class="conn-line"></div></div>
+
+<div class="stop">
+  <div class="stop-hdr" onclick="tg(this)"><div class="stop-ico">🚄</div><div class="stop-meta"><div class="stop-name">Shinagawa Station → Shinkansen to Kyoto (4:07pm)</div><div class="tags"><span class="tag ta">Leave hotel 3:00pm · Shinagawa by 3:20pm</span><span class="tag tf">Ekiben bento · Konbini snacks</span><span class="tag tk">Mt. Fuji — right side seats</span></div></div><div class="chev">▾</div></div>
+  <div class="stop-body">
+    <div class="itabs"><div class="itab on" onclick="it(this,'sk')">Getting There</div><div class="itab" onclick="it(this,'sk')">At the Station</div><div class="itab" onclick="it(this,'sk')">On the Train</div><div class="itab" onclick="it(this,'sk')">Kids on Shinkansen</div></div>
+    <div class="ipanel on" id="sk-0"><div class="routes" style="margin-bottom:8px"><div class="route"><div class="route-label">Taxi (recommended with bags)</div><div class="route-time">~20–25 min · ¥2,000–3,000</div><div class="route-detail">With luggage and 6 people, 2 taxis or a van. Book through hotel. Direct to Shinkansen entrance at Shinagawa north side. Leave hotel by 3:00pm.</div></div><div class="route"><div class="route-label">Subway (only if no luggage)</div><div class="route-time">~25 min</div><div class="route-detail">Akasaka-mitsuke → Ginza Line → Shinbashi → Keikyu Line → Shinagawa. Fine without bags. Chaotic with luggage during afternoon rush.</div></div></div><div class="box b-re"><strong>Leave hotel by 3:00pm.</strong> Arrive Shinagawa ~3:20pm. You have 47 min inside the station before the 4:07pm train — enough to navigate, buy ekiben, and find the platform without rushing.</div></div>
+    <div class="ipanel" id="sk-1"><div class="lbl">Inside Shinagawa</div><div class="desc">Large, clearly signed for Shinkansen. Follow signs. Seats should already be reserved — essential for a family of 6. JR Ticket Office (Midori no Madoguchi) can help if needed. Allow 20 min from taxi drop-off to platform.</div><div class="lbl">Ekiben — train bento boxes</div><div class="desc">Sold in shops before the Shinkansen gates — some of the best train meals in the world. Get one per person plus drinks from the 7-Eleven inside the station.</div><div class="box b-am"><strong>Ekiben for kids:</strong> Look for character bento boxes — often Shinkansen or Pokémon themed, cute, tasty, and a souvenir box in itself. The Makunouchi bento (assorted rice, fish, tamagoyaki, pickles) is the classic for anyone.</div></div>
+    <div class="ipanel" id="sk-2"><div class="desc">Hikari or Nozomi Shinkansen to Kyoto: approximately 2 hours 15 minutes. Smooth, fast, impressively quiet. One of the great engineering achievements in the world — runs to the second, reaches 320 km/h.</div><div class="box b-te"><strong>Mt. Fuji — don't miss:</strong> Sit on the RIGHT side of the train (seats A/B facing forward). Fuji appears ~30–45 min into the journey. Departing at 4:07pm → look right at 4:40–4:50pm. Visible for about 5 minutes. Set a phone alarm. Cameras ready. Late March has a good chance of a clear view.</div><div class="box b-bl" style="margin-top:8px"><strong>Arriving in Kyoto (~6:20pm):</strong> Kyoto Station is enormous and spectacular. Taxis queue directly outside. Allow 15–30 min for the taxi queue on a busy evening.</div></div>
+    <div class="ipanel" id="sk-3"><div class="box b-pu"><strong>Kids love the Shinkansen:</strong> Tell them the speed before boarding (320 km/h). They'll spend the first 20 min watching the landscape blur past the windows. The train is an experience worth paying attention to.</div><div class="box b-te" style="margin-top:8px"><strong>Activity on the ride:</strong> Each person names one thing from Tokyo they'd want to bring back or do again. Compare answers. The 2-hour window is a perfect reflection space between Tokyo and Kyoto.</div></div>
+  </div>
+</div>
+</div><!-- end day 4 -->
+
+<footer class="page-footer">
+  Tokyo Family Guide · March 22–25, 2026 · ANA InterContinental, Akasaka · Family of 6
+</footer>
+
+<script>
+function tg(h){
+  const s=h.parentElement,b=s.querySelector('.stop-body'),c=h.querySelector('.chev'),o=b.classList.contains('on');
+  b.classList.toggle('on',!o);c.classList.toggle('on',!o);
+}
+function it(tab,pfx){
+  const s=tab.closest('.stop'),ts=tab.parentElement.querySelectorAll('.itab'),idx=Array.from(ts).indexOf(tab);
+  ts.forEach((t,i)=>t.classList.toggle('on',i===idx));
+  s.querySelectorAll('.ipanel').forEach((p,i)=>p.classList.toggle('on',i===idx));
+}
+function sd(n){
+  document.querySelectorAll('.day-btn').forEach((t,i)=>t.classList.toggle('on',i===n));
+  document.querySelectorAll('.day-panel').forEach((p,i)=>p.classList.toggle('on',i===n));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
